@@ -1,0 +1,20 @@
+version: '3.3'
+
+services:
+  db:
+    image: mysql:8.0.31
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'blog'
+      MYSQL_USER: 'admin'
+      MYSQL_PASSWORD: 'qwerty'
+      MYSQL_ROOT_PASSWORD: 'root'
+
+    ports:
+      - '3306:3306'
+
+  server:
+   build:
+     context: .
+   ports:
+     - '3002:3002'

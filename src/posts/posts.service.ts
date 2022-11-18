@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Article } from './article.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 
 @Injectable()
 export class PostsService {
@@ -15,9 +15,13 @@ export class PostsService {
 
   async getAllPostsWithoutBanned(userId: number): Promise<Article[]> {
     const posts = await this.postsRepository.find({
-      join: { alias: 'users', leftJoin: { users: 'articles.bannedByUsers' } },
-      where: (qb: any): any => {
-        qb.where('users.id = :userId', { userId });
+      relations: {
+        bannedByUsers: true,
+      },
+      where: {
+        bannedByUsers: {
+          id: Not(userId),
+        },
       },
     });
 

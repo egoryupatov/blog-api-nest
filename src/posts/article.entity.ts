@@ -27,7 +27,7 @@ export class Article {
   @Column()
   time: string;
 
-  @Column()
+  @Column({ nullable: true })
   categoryImage: string;
 
   @Column()
