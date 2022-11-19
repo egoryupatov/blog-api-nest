@@ -18,7 +18,7 @@ export class UsersService {
   }
 
   async findByToken(token: string): Promise<User | undefined> {
-    return this.usersRepository.findOneBy({
+    return this.usersRepository.findOneByOrFail({
       token: token,
     });
   }

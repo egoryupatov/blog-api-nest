@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
@@ -24,8 +25,15 @@ export class Article {
   @Column()
   category: string;
 
-  @Column()
-  time: string;
+  //проблема со временем
+
+  /*@Column('datetime', {
+    name: 'publishDate',
+  })
+  publishDate: Date;*/
+
+  @CreateDateColumn()
+  publishDate: Date;
 
   @Column({ nullable: true })
   categoryImage: string;

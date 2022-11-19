@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Article } from './article.entity';
-import { Not, Repository } from 'typeorm';
+import { Not, In, Repository } from 'typeorm';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(Article) private postsRepository: Repository<Article>,
+    @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
   getAllPosts(): Promise<Article[]> {
@@ -14,14 +16,21 @@ export class PostsService {
   }
 
   async getAllPostsWithoutBanned(userId: number): Promise<Article[]> {
+    const user = await this.userRepository.findOneOrFail({
+      relations: {
+        bannedArticles: true,
+      },
+      where: {
+        id: userId,
+      },
+    });
+
     const posts = await this.postsRepository.find({
       relations: {
         bannedByUsers: true,
       },
       where: {
-        bannedByUsers: {
-          id: Not(userId),
-        },
+        id: Not(In(user.bannedArticles.map((article) => article.id))),
       },
     });
 
@@ -29,7 +38,7 @@ export class PostsService {
   }
 
   getSinglePost(id: number): Promise<Article> {
-    return this.postsRepository.findOneBy({ id: id });
+    return this.postsRepository.findOneByOrFail({ id: id });
   }
 
   async addPost(post: Article) {
