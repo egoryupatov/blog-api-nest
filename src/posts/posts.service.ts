@@ -28,6 +28,7 @@ export class PostsService {
     const posts = await this.postsRepository.find({
       relations: {
         bannedByUsers: true,
+        author: true,
       },
       where: {
         id: Not(In(user.bannedArticles.map((article) => article.id))),

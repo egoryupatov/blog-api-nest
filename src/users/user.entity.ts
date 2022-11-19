@@ -5,6 +5,7 @@ import {
   OneToMany,
   ManyToMany,
   JoinTable,
+  CreateDateColumn,
 } from 'typeorm';
 import { Article } from '../posts/article.entity';
 
@@ -22,8 +23,8 @@ export class User {
   @Column()
   avatar: string;
 
-  @Column()
-  signUpDate: string;
+  @CreateDateColumn()
+  signUpDate: Date;
 
   @Column()
   rating: number;

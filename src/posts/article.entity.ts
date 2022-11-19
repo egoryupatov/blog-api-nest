@@ -25,13 +25,6 @@ export class Article {
   @Column()
   category: string;
 
-  //проблема со временем
-
-  /*@Column('datetime', {
-    name: 'publishDate',
-  })
-  publishDate: Date;*/
-
   @CreateDateColumn()
   publishDate: Date;
 
