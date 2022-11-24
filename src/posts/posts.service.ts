@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Article } from './article.entity';
 import { Not, In, Repository } from 'typeorm';
@@ -52,7 +52,7 @@ export class PostsService {
   }
 
   async deletePost(id: number) {
-    await this.postsRepository.delete({ id: id });
+    await this.postsRepository.delete(id);
   }
 
   async incrementRating(id: number) {

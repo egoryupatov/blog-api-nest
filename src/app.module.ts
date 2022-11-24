@@ -8,9 +8,15 @@ import { Article } from './posts/article.entity';
 import { PostsModule } from './posts/posts.module';
 import { Comments } from './comments/comments.entity';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/pictures',
+    }),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
