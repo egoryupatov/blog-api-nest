@@ -26,6 +26,7 @@ import { join } from 'path';
       database: 'blog',
       entities: [User, Article, Comments],
       synchronize: true,
+      autoLoadEntities: true,
     }),
     UsersModule,
     PostsModule,

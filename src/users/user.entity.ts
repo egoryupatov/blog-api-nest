@@ -38,7 +38,9 @@ export class User {
   @OneToMany(() => Article, (article) => article.author)
   articles: Article[];
 
-  @ManyToMany(() => Article, (article) => article.bannedByUsers)
-  @JoinTable()
+  @ManyToMany(() => Article, (article) => article.bannedByUsers, {
+    cascade: true,
+  })
+  @JoinTable({ name: 'bannedArticles' })
   bannedArticles: Article[];
 }

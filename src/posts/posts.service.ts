@@ -64,4 +64,6 @@ export class PostsService {
     const post = await this.postsRepository.findOneBy({ id: id });
     await this.postsRepository.decrement(post, 'rating', 1);
   }
+
+  async hidePost() {}
 }

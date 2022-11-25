@@ -6,10 +6,12 @@ import {
   HttpStatus,
   Headers,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Article } from '../posts/article.entity';
 import { User } from './user.entity';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller({ path: '/users' })
 export class UsersController {
@@ -35,5 +37,11 @@ export class UsersController {
     } else {
       throw new HttpException('There is no such user!', HttpStatus.NOT_FOUND);
     }
+  }
+
+  @Post('/hide')
+  async banPost(@Body() postId) {
+    await this.usersService.hidePost();
+    return 'hi';
   }
 }

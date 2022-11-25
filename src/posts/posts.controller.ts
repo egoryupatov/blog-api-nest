@@ -88,4 +88,9 @@ export class PostsController {
   async decrementRating(@Param('id') id: number) {
     await this.postsService.decrementRating(id);
   }
+
+  @Put('/hide')
+  async hidePost() {
+    await this.postsService.hidePost();
+  }
 }
