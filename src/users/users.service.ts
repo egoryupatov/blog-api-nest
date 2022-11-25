@@ -8,7 +8,7 @@ import { Article } from '../posts/article.entity';
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
-    @InjectRepository(User) private postsRepository: Repository<Article>,
+    @InjectRepository(Article) private postsRepository: Repository<Article>,
   ) {}
 
   async findOne(login: string, password: string): Promise<User | undefined> {
@@ -24,14 +24,25 @@ export class UsersService {
     });
   }
 
-  async hidePost(): Promise<any> {
-    const entity = await this.usersRepository.create(new User());
-    const entity2 = {
-      ...entity,
-      bannedArticles: [{ id: 71 }],
-    };
-    const user = await this.usersRepository.save(entity2);
+  //не работает обработка айди
 
-    await this.usersRepository.manager.softRemove(user);
+  async hidePost(userId: number, postId: number): Promise<any> {
+    const user = await this.usersRepository.findOneOrFail({
+      where: { id: userId },
+      relations: {
+        bannedArticles: true,
+      },
+    });
+
+    const article = await this.postsRepository.findOneOrFail({
+      where: { id: postId },
+      relations: {
+        bannedByUsers: true,
+      },
+    });
+
+    user.bannedArticles = [...user.bannedArticles, article];
+
+    await this.usersRepository.save(user);
   }
 }

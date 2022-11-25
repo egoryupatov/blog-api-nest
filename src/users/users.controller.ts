@@ -40,8 +40,7 @@ export class UsersController {
   }
 
   @Post('/hide')
-  async banPost(@Body() postId) {
-    await this.usersService.hidePost();
-    return 'hi';
+  async banPost(@Body() userId: number, postId: number) {
+    await this.usersService.hidePost(userId, postId);
   }
 }
