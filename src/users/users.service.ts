@@ -24,18 +24,16 @@ export class UsersService {
     });
   }
 
-  //не работает обработка айди
-
-  async hidePost(userId: number, postId: number): Promise<any> {
+  async hidePost(data) {
     const user = await this.usersRepository.findOneOrFail({
-      where: { id: userId },
+      where: { id: data.userId },
       relations: {
         bannedArticles: true,
       },
     });
 
     const article = await this.postsRepository.findOneOrFail({
-      where: { id: postId },
+      where: { id: data.articleId },
       relations: {
         bannedByUsers: true,
       },

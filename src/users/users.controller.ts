@@ -7,6 +7,7 @@ import {
   Headers,
   Post,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Article } from '../posts/article.entity';
@@ -40,7 +41,7 @@ export class UsersController {
   }
 
   @Post('/hide')
-  async banPost(@Body() userId: number, postId: number) {
-    await this.usersService.hidePost(userId, postId);
+  async banPost(@Body() data) {
+    await this.usersService.hidePost(data);
   }
 }
