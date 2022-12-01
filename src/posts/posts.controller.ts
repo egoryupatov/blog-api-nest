@@ -23,19 +23,26 @@ import { extname } from 'path';
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
-  @Get()
-  async allPosts(): Promise<Article[]> {
-    return this.postsService.getAllPosts();
-  }
-
-  @Get('banned')
-  async allPostsWithoutBanned(@Req() request): Promise<Article[]> {
+  @Get('all')
+  async getAllPostsWithoutBanned(@Req() request): Promise<Article[]> {
     return this.postsService.getAllPostsWithoutBanned(request.user?.id);
   }
 
-  @Get(':id')
+  @Get('banned')
+  async getBannedPosts(@Req() request): Promise<Article[]> {
+    return this.postsService.getBannedPosts(request.user?.id);
+  }
+
+  @Get(':category/:id')
   async getSinglePost(@Param('id') id: string): Promise<Article> {
     return this.postsService.getSinglePost(Number(id));
+  }
+
+  @Get(':category')
+  async getPostsByCategory(
+    @Param('category') category: string,
+  ): Promise<Article[]> {
+    return this.postsService.getPostsByCategory(category);
   }
 
   @Post()
@@ -65,11 +72,11 @@ export class PostsController {
     return JSON.stringify(file.filename);
   }
 
-  @Put(':id')
+  /*  @Put(':id')
   @UseGuards(AuthGuard)
   async editPost(@Param('id') id: string, @Body() data: Article) {
     await this.postsService.editPost(Number(id), data);
-  }
+  }*/
 
   @Delete()
   @UseGuards(AuthGuard)
@@ -79,13 +86,13 @@ export class PostsController {
 
   @Get(':id/rating/increment')
   @UseGuards(AuthGuard)
-  async incrementRating(@Param('id') id: number) {
-    await this.postsService.incrementRating(id);
+  async incrementRating(@Param('id') id: string) {
+    await this.postsService.incrementRating(Number(id));
   }
 
   @Get(':id/rating/decrement')
   @UseGuards(AuthGuard)
-  async decrementRating(@Param('id') id: number) {
-    await this.postsService.decrementRating(id);
+  async decrementRating(@Param('id') id: string) {
+    await this.postsService.decrementRating(Number(id));
   }
 }

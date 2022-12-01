@@ -44,4 +44,9 @@ export class UsersController {
   async banPost(@Body() data) {
     await this.usersService.hidePost(data);
   }
+
+  @Post('/unhide')
+  async unHidePost(@Body() data) {
+    await this.usersService.unHidePost(data);
+  }
 }

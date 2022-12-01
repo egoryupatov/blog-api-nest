@@ -2,13 +2,15 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../users/user.entity';
-import { Comments } from '../comments/comments.entity';
+import { Comment } from '../comments/comments.entity';
+import { Category } from '../category/category.entity';
 
 @Entity()
 export class Article {
@@ -18,11 +20,14 @@ export class Article {
   @ManyToOne(() => User, (user) => user.articles)
   author: User;
 
+  @ManyToOne(() => Category, (category) => category.articles)
+  category: Category;
+
   @ManyToMany(() => User, (user) => user.bannedArticles)
   bannedByUsers: User[];
 
-  @Column()
-  category: string;
+  @OneToMany(() => Comment, (comments) => comments.article)
+  comments: Comment[];
 
   @CreateDateColumn()
   publishDate: Date;
@@ -39,13 +44,7 @@ export class Article {
   @Column()
   description: string;
 
-  @OneToMany(() => Comments, (comments) => comments.article)
-  comments: Comments[];
-
-  @Column()
-  numberOfComments: number;
-
-  @Column()
+  @Column({ default: 0 })
   rating: number;
 
   @Column('text')

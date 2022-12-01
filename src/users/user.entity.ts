@@ -38,6 +38,9 @@ export class User {
   @OneToMany(() => Article, (article) => article.author)
   articles: Article[];
 
+  @OneToMany(() => Article, (article) => article.author)
+  comments: Comment[];
+
   @ManyToMany(() => Article, (article) => article.bannedByUsers, {
     cascade: true,
   })

@@ -33,13 +33,30 @@ export class UsersService {
     });
 
     const article = await this.postsRepository.findOneOrFail({
-      where: { id: data.articleId },
+      where: { id: data.postId },
       relations: {
         bannedByUsers: true,
       },
     });
 
     user.bannedArticles = [...user.bannedArticles, article];
+
+    await this.usersRepository.save(user);
+  }
+
+  //посты на разбаниваются вообще, либо разбанивается самый первый только
+
+  async unHidePost(data) {
+    const user = await this.usersRepository.findOneOrFail({
+      where: { id: data.userId },
+      relations: {
+        bannedArticles: true,
+      },
+    });
+
+    user.bannedArticles = user.bannedArticles.filter((e) => {
+      return e.id !== data.postId;
+    });
 
     await this.usersRepository.save(user);
   }

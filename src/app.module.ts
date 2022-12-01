@@ -6,10 +6,13 @@ import { User } from './users/user.entity';
 import { UsersModule } from './users/users.module';
 import { Article } from './posts/article.entity';
 import { PostsModule } from './posts/posts.module';
-import { Comments } from './comments/comments.entity';
+import { Comment } from './comments/comments.entity';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { CommentsModule } from './comments/comments.module';
+import { Category } from './category/category.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,13 +27,15 @@ import { join } from 'path';
       port: 3306,
       password: 'qwerty',
       database: 'blog',
-      entities: [User, Article, Comments],
+      entities: [User, Article, Comment, Category],
       synchronize: true,
       autoLoadEntities: true,
     }),
     UsersModule,
     PostsModule,
     DashboardModule,
+    CommentsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

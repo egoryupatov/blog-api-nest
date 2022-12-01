@@ -3,17 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Article } from './article.entity';
 import { Not, In, Repository } from 'typeorm';
 import { User } from '../users/user.entity';
+import { Category } from '../category/category.entity';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(Article) private postsRepository: Repository<Article>,
     @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
   ) {}
-
-  getAllPosts(): Promise<Article[]> {
-    return this.postsRepository.find();
-  }
 
   async getAllPostsWithoutBanned(userId: number): Promise<Article[]> {
     const user = await this.userRepository.findOneOrFail({
@@ -29,6 +28,8 @@ export class PostsService {
       relations: {
         bannedByUsers: true,
         author: true,
+        category: true,
+        comments: true,
       },
       where: {
         id: Not(In(user.bannedArticles.map((article) => article.id))),
@@ -38,18 +39,60 @@ export class PostsService {
     return posts;
   }
 
-  getSinglePost(id: number): Promise<Article> {
-    return this.postsRepository.findOneByOrFail({ id: id });
+  async getBannedPosts(userId: number): Promise<Article[]> {
+    const user = await this.userRepository.findOneOrFail({
+      relations: {
+        bannedArticles: true,
+      },
+      where: {
+        id: userId,
+      },
+    });
+
+    const posts = await this.postsRepository.find({
+      relations: {
+        bannedByUsers: true,
+        author: true,
+      },
+      where: {
+        id: In(user.bannedArticles.map((article) => article.id)),
+      },
+    });
+
+    return posts;
+  }
+
+  async getSinglePost(id: number): Promise<Article> {
+    const post = await this.postsRepository.findOne({
+      where: {
+        id: id,
+      },
+      relations: {
+        category: true,
+        author: true,
+        comments: true,
+      },
+    });
+
+    return post;
   }
 
   async addPost(post: Article) {
     await this.postsRepository.save(post);
   }
 
-  async editPost(id: number, data: Article) {
-    const updatedPost = await this.postsRepository.findOneBy({ id: id });
-    await this.postsRepository.update(updatedPost.id, data);
-  }
+  /* async editPost(id: number, data: Article) {
+    const updatedPost = await this.postsRepository.findOne({
+      relations: {
+        category: true,
+        author: true,
+        comments: true,
+      },
+      where: { id: id },
+    });
+
+    return this.postsRepository.update(updatedPost.id, data);
+  }*/
 
   async deletePost(id: number) {
     await this.postsRepository.delete(id);
@@ -65,5 +108,24 @@ export class PostsService {
     await this.postsRepository.decrement(post, 'rating', 1);
   }
 
-  async hidePost() {}
+  async getPostsByCategory(postCategory: string): Promise<Article[]> {
+    const category = await this.categoryRepository.findOne({
+      where: {
+        name: postCategory,
+      },
+    });
+
+    const posts = await this.postsRepository.find({
+      relations: {
+        category: true,
+        comments: true,
+        author: true,
+      },
+      where: {
+        category: category,
+      },
+    });
+
+    return posts;
+  }
 }

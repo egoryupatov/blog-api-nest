@@ -6,9 +6,10 @@ import { UsersService } from './users.service';
 import { Article } from '../posts/article.entity';
 import { AuthMiddleware } from '../auth/auth.middleware';
 import { PostsController } from '../posts/posts.controller';
+import { Comment } from '../comments/comments.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Article])],
+  imports: [TypeOrmModule.forFeature([User, Article, Comment])],
   providers: [UsersService],
   controllers: [UsersController],
 })
