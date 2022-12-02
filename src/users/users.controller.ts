@@ -6,19 +6,14 @@ import {
   HttpStatus,
   Headers,
   Post,
-  UseGuards,
-  Put,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { Article } from '../posts/article.entity';
-import { User } from './user.entity';
-import { AuthGuard } from '../auth/auth.guard';
 
 @Controller({ path: '/users' })
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
+  /*  @Post()
   async auth(@Body() data) {
     const user = await this.usersService.findOne(data.login, data.password);
 
@@ -27,9 +22,9 @@ export class UsersController {
     } else {
       throw new HttpException('There is no such user!', HttpStatus.NOT_FOUND);
     }
-  }
+  }*/
 
-  @Get('/token')
+  /*  @Get('/token')
   async findUserByToken(@Headers() headers) {
     const user = await this.usersService.findByToken(headers.authorization);
 
@@ -38,6 +33,11 @@ export class UsersController {
     } else {
       throw new HttpException('There is no such user!', HttpStatus.NOT_FOUND);
     }
+  }*/
+
+  @Post()
+  async getUserInfo(@Body() body) {
+    return this.usersService.getUserInfo(body);
   }
 
   @Post('/hide')

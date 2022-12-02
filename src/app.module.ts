@@ -13,6 +13,7 @@ import { join } from 'path';
 import { CommentsModule } from './comments/comments.module';
 import { Category } from './category/category.entity';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { AuthModule } from './auth/auth.module';
       synchronize: true,
       autoLoadEntities: true,
     }),
+    ConfigModule.forRoot(),
     UsersModule,
     PostsModule,
     DashboardModule,

@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { Article } from './article.entity';
-import { AuthGuard } from '../auth/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { diskStorage } from 'multer';
@@ -46,13 +45,11 @@ export class PostsController {
   }
 
   @Post()
-  @UseGuards(AuthGuard)
   addPost(@Body() data: Article) {
     return this.postsService.addPost(data);
   }
 
   @Post('/image')
-  @UseGuards(AuthGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -79,19 +76,16 @@ export class PostsController {
   }*/
 
   @Delete()
-  @UseGuards(AuthGuard)
   async deletePost(@Body() id: number) {
     await this.postsService.deletePost(id);
   }
 
   @Get(':id/rating/increment')
-  @UseGuards(AuthGuard)
   async incrementRating(@Param('id') id: string) {
     await this.postsService.incrementRating(Number(id));
   }
 
   @Get(':id/rating/decrement')
-  @UseGuards(AuthGuard)
   async decrementRating(@Param('id') id: string) {
     await this.postsService.decrementRating(Number(id));
   }

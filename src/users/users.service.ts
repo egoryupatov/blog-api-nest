@@ -11,17 +11,36 @@ export class UsersService {
     @InjectRepository(Article) private postsRepository: Repository<Article>,
   ) {}
 
-  async findOne(login: string, password: string): Promise<User | undefined> {
+  /*  async findOne(login: string, password: string): Promise<User | undefined> {
     return this.usersRepository.findOneBy({
       login: login,
       password: password,
     });
+  }*/
+
+  async findByLogin(login: string): Promise<User | undefined> {
+    return this.usersRepository.findOneBy({ login: login });
   }
 
-  async findByToken(token: string): Promise<User | undefined> {
-    return this.usersRepository.findOneByOrFail({
-      token: token,
+  async findById(id: number): Promise<User | undefined> {
+    return this.usersRepository.findOneBy({ id: id });
+  }
+
+  // можно этим одним запросом получать в том числе список постов,комментариев и забанненых постов юзера,
+  // правильно ли это или разбить запросы?
+
+  async getUserInfo(body): Promise<User | undefined> {
+    const user = await this.usersRepository.findOne({
+      where: {
+        id: body.id,
+      },
+      relations: {
+        comments: true,
+        articles: true,
+      },
     });
+
+    return user;
   }
 
   async hidePost(data) {
@@ -43,8 +62,6 @@ export class UsersService {
 
     await this.usersRepository.save(user);
   }
-
-  //посты на разбаниваются вообще, либо разбанивается самый первый только
 
   async unHidePost(data) {
     const user = await this.usersRepository.findOneOrFail({
