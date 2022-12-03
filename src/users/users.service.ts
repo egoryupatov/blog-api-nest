@@ -19,11 +19,11 @@ export class UsersService {
   }*/
 
   async findByLogin(login: string): Promise<User | undefined> {
-    return this.usersRepository.findOneBy({ login: login });
+    return this.usersRepository.findOneByOrFail({ login: login });
   }
 
   async findById(id: number): Promise<User | undefined> {
-    return this.usersRepository.findOneBy({ id: id });
+    return this.usersRepository.findOneByOrFail({ id: id });
   }
 
   // можно этим одним запросом получать в том числе список постов,комментариев и забанненых постов юзера,
