@@ -3,20 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { Article } from '../posts/article.entity';
+import { Comment } from '../comments/comments.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
     @InjectRepository(Article) private postsRepository: Repository<Article>,
+    @InjectRepository(Comment) private commentsRepository: Repository<Comment>,
   ) {}
-
-  /*  async findOne(login: string, password: string): Promise<User | undefined> {
-    return this.usersRepository.findOneBy({
-      login: login,
-      password: password,
-    });
-  }*/
 
   async findByLogin(login: string): Promise<User | undefined> {
     return this.usersRepository.findOneByOrFail({ login: login });
@@ -26,21 +21,25 @@ export class UsersService {
     return this.usersRepository.findOneByOrFail({ id: id });
   }
 
-  // можно этим одним запросом получать в том числе список постов,комментариев и забанненых постов юзера,
-  // правильно ли это или разбить запросы?
-
-  async getUserInfo(body): Promise<User | undefined> {
+  async getLoggedUserInfo(userId): Promise<Partial<User> | undefined> {
     const user = await this.usersRepository.findOne({
       where: {
-        id: body.id,
+        id: userId,
       },
       relations: {
-        comments: true,
+        comments: {
+          article: {
+            category: true,
+          },
+          author: true,
+        },
         articles: true,
+        bannedArticles: true,
       },
     });
 
-    return user;
+    const { password, ...securedUser } = user;
+    return securedUser;
   }
 
   async hidePost(data) {

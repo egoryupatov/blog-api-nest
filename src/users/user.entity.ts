@@ -8,6 +8,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { Article } from '../posts/article.entity';
+import { Comment } from '../comments/comments.entity';
 
 @Entity()
 export class User {
@@ -29,16 +30,10 @@ export class User {
   @Column()
   rating: number;
 
-  @Column({ unique: true })
-  token: string;
-
-  @Column({ default: true })
-  isActive: boolean;
-
   @OneToMany(() => Article, (article) => article.author)
   articles: Article[];
 
-  @OneToMany(() => Article, (article) => article.author)
+  @OneToMany(() => Comment, (comment) => comment.author)
   comments: Comment[];
 
   @ManyToMany(() => Article, (article) => article.bannedByUsers, {

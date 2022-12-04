@@ -99,13 +99,39 @@ export class PostsService {
   }
 
   async incrementRating(id: number) {
-    const post = await this.postsRepository.findOneBy({ id: id });
-    await this.postsRepository.increment(post, 'rating', 1);
+    const post = await this.postsRepository.findOne({
+      relations: {
+        author: true,
+      },
+      where: {
+        id: id,
+      },
+    });
+
+    const user = await this.userRepository.findOne({
+      where: { id: post.author.id },
+    });
+
+    await this.postsRepository.increment({ id: post.id }, 'rating', 1);
+    await this.userRepository.increment({ id: user.id }, 'rating', 1);
   }
 
   async decrementRating(id: number) {
-    const post = await this.postsRepository.findOneBy({ id: id });
-    await this.postsRepository.decrement(post, 'rating', 1);
+    const post = await this.postsRepository.findOne({
+      relations: {
+        author: true,
+      },
+      where: {
+        id: id,
+      },
+    });
+
+    const user = await this.userRepository.findOne({
+      where: { id: post.author.id },
+    });
+
+    await this.postsRepository.decrement({ id: post.id }, 'rating', 1);
+    await this.userRepository.decrement({ id: user.id }, 'rating', 1);
   }
 
   async getPostsByCategory(postCategory: string): Promise<Article[]> {

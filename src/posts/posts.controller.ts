@@ -80,13 +80,13 @@ export class PostsController {
     await this.postsService.deletePost(id);
   }
 
-  @Get(':id/rating/increment')
-  async incrementRating(@Param('id') id: string) {
-    await this.postsService.incrementRating(Number(id));
+  @Post('rating/increment')
+  async incrementRating(@Body() body) {
+    return this.postsService.incrementRating(Number(body.id));
   }
 
-  @Get(':id/rating/decrement')
-  async decrementRating(@Param('id') id: string) {
-    await this.postsService.decrementRating(Number(id));
+  @Post('rating/decrement')
+  async decrementRating(@Body() body) {
+    return this.postsService.decrementRating(Number(body.id));
   }
 }

@@ -6,6 +6,8 @@ import {
   HttpStatus,
   Headers,
   Post,
+  Request,
+  Param,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 
@@ -13,35 +15,13 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  /*  @Post()
-  async auth(@Body() data) {
-    const user = await this.usersService.findOne(data.login, data.password);
-
-    if (user) {
-      return { token: user.token, id: user.id };
-    } else {
-      throw new HttpException('There is no such user!', HttpStatus.NOT_FOUND);
-    }
-  }*/
-
-  /*  @Get('/token')
-  async findUserByToken(@Headers() headers) {
-    const user = await this.usersService.findByToken(headers.authorization);
-
-    if (user) {
-      return user;
-    } else {
-      throw new HttpException('There is no such user!', HttpStatus.NOT_FOUND);
-    }
-  }*/
-
-  @Post()
-  async getUserInfo(@Body() body) {
-    return this.usersService.getUserInfo(body);
+  @Get(':id')
+  async getLoggedUserInfo(@Param() param) {
+    return this.usersService.getLoggedUserInfo(Number(param.id));
   }
 
   @Post('/hide')
-  async banPost(@Body() data) {
+  async hidePost(@Body() data) {
     await this.usersService.hidePost(data);
   }
 

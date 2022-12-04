@@ -7,7 +7,6 @@ import { UsersModule } from './users/users.module';
 import { Article } from './posts/article.entity';
 import { PostsModule } from './posts/posts.module';
 import { Comment } from './comments/comments.entity';
-import { DashboardModule } from './dashboard/dashboard.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { CommentsModule } from './comments/comments.module';
@@ -35,7 +34,6 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot(),
     UsersModule,
     PostsModule,
-    DashboardModule,
     CommentsModule,
     AuthModule,
   ],
