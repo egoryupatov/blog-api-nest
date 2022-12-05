@@ -4,11 +4,15 @@ import {
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Tree,
+  TreeChildren,
+  TreeParent,
 } from 'typeorm';
 import { Article } from '../posts/article.entity';
 import { User } from '../users/user.entity';
 
 @Entity()
+@Tree('materialized-path')
 export class Comment {
   @PrimaryGeneratedColumn()
   id: number;
@@ -29,4 +33,10 @@ export class Comment {
 
   @CreateDateColumn()
   publishDate: Date;
+
+  @TreeChildren()
+  children: Comment[];
+
+  @TreeParent()
+  parent: Comment;
 }
