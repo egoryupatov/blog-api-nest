@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { Article } from './article.entity';
-import { Not, In, Repository } from 'typeorm';
+import { Not, In, Repository, DataSource } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Category } from '../category/category.entity';
+import { Like } from 'typeorm';
 
 @Injectable()
 export class PostsService {
@@ -153,5 +154,15 @@ export class PostsService {
     });
 
     return posts;
+  }
+
+  async getSearchResults(searchQuery: string): Promise<Article[]> {
+    const searchResults = await this.postsRepository.find({
+      where: {
+        title: Like(`%${searchQuery}%`),
+      },
+    });
+
+    return searchResults;
   }
 }

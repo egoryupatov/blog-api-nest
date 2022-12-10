@@ -89,4 +89,9 @@ export class PostsController {
   async decrementRating(@Body() body) {
     return this.postsService.decrementRating(Number(body.id));
   }
+
+  @Get('search/:query')
+  async getPostSearchResults(@Param('query') query: string) {
+    return this.postsService.getSearchResults(query);
+  }
 }

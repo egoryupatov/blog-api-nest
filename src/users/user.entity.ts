@@ -41,4 +41,6 @@ export class User {
   })
   @JoinTable({ name: 'bannedArticles' })
   bannedArticles: Article[];
+
+  //2 штуки many to many на подписки
 }

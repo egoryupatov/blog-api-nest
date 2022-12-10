@@ -2,7 +2,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Tree,
   TreeChildren,
@@ -10,16 +13,14 @@ import {
 } from 'typeorm';
 import { Article } from '../posts/article.entity';
 import { User } from '../users/user.entity';
+import { Category } from '../category/category.entity';
 
 @Entity()
-@Tree('materialized-path')
 export class Comment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Article, (article) => article.comments, {
-    cascade: true,
-  })
+  @ManyToOne(() => Article, (article) => article.comments)
   article: Article;
 
   @ManyToOne(() => User, (user) => user.comments)
@@ -34,9 +35,9 @@ export class Comment {
   @CreateDateColumn()
   publishDate: Date;
 
-  @TreeChildren()
+  @OneToMany(() => Comment, (comment) => comment.parent)
   children: Comment[];
 
-  @TreeParent()
+  @ManyToOne(() => Comment, (comment) => comment.children)
   parent: Comment;
 }

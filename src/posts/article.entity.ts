@@ -7,6 +7,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  Tree,
 } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Comment } from '../comments/comments.entity';
@@ -26,7 +27,9 @@ export class Article {
   @ManyToMany(() => User, (user) => user.bannedArticles)
   bannedByUsers: User[];
 
-  @OneToMany(() => Comment, (comments) => comments.article)
+  @OneToMany(() => Comment, (comments) => comments.article, {
+    eager: true,
+  })
   comments: Comment[];
 
   @CreateDateColumn()
