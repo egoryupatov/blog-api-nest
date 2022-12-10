@@ -35,9 +35,9 @@ export class Comment {
   @CreateDateColumn()
   publishDate: Date;
 
-  @OneToMany(() => Comment, (comment) => comment.parent)
-  children: Comment[];
-
   @ManyToOne(() => Comment, (comment) => comment.children)
   parent: Comment;
+
+  @OneToMany(() => Comment, (comment) => comment.parent)
+  children: Comment[];
 }

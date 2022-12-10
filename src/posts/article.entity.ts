@@ -27,9 +27,7 @@ export class Article {
   @ManyToMany(() => User, (user) => user.bannedArticles)
   bannedByUsers: User[];
 
-  @OneToMany(() => Comment, (comments) => comments.article, {
-    eager: true,
-  })
+  @OneToMany(() => Comment, (comments) => comments.article)
   comments: Comment[];
 
   @CreateDateColumn()
