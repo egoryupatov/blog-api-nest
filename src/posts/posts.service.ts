@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { Article } from './article.entity';
-import { Not, In, Repository, DataSource } from 'typeorm';
+import { Not, In, Repository, DataSource, ILike } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Category } from '../category/category.entity';
 import { Like } from 'typeorm';
@@ -156,13 +156,24 @@ export class PostsService {
     return posts;
   }
 
-  async getSearchResults(searchQuery: string): Promise<Article[]> {
-    const searchResults = await this.postsRepository.find({
-      where: {
-        title: Like(`%${searchQuery}%`),
-      },
+  // не работает
+
+  async getSearchResults(searchQuery: string) {
+    //вариант через queryBuilder
+
+    const postRepository = this.postsRepository;
+
+    const posts = await postRepository
+      .createQueryBuilder('post')
+      .where('post.title LIKE :title', { title: `%weather%` })
+      .getMany();
+
+    //вариант через find
+
+    const posts2 = await postRepository.find({
+      where: { title: Like('%weather%') },
     });
 
-    return searchResults;
+    return posts;
   }
 }

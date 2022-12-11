@@ -16,6 +16,7 @@ import { User } from '../users/user.entity';
 import { Category } from '../category/category.entity';
 
 @Entity()
+@Tree('closure-table')
 export class Comment {
   @PrimaryGeneratedColumn()
   id: number;
@@ -35,9 +36,16 @@ export class Comment {
   @CreateDateColumn()
   publishDate: Date;
 
+  @TreeChildren()
+  children: Comment[];
+
+  @TreeParent()
+  parent: Comment;
+
+  /*
   @ManyToOne(() => Comment, (comment) => comment.children)
   parent: Comment;
 
-  @OneToMany(() => Comment, (comment) => comment.parent)
-  children: Comment[];
+  @OneToMany(() => Comment, (comment) => comment.parent, { eager: true })
+  children: Comment[];*/
 }
