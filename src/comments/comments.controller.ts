@@ -11,9 +11,14 @@ export class CommentsController {
     return this.commentsService.getAllComments();
   }
 
-  @Get(':id')
+  @Get('post/:id')
   async getPostComments(@Param('id') id: string) {
     return this.commentsService.getPostComments(Number(id));
+  }
+
+  @Get('children/:id')
+  async getCommentChildren(@Param('id') id: string) {
+    return this.commentsService.getCommentChildren(Number(id));
   }
 
   @Get('user/:id')

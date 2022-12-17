@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { Comment } from './comments.entity';
 import { Article } from '../posts/article.entity';
 import { User } from '../users/user.entity';
@@ -27,18 +27,35 @@ export class CommentsService {
     });
   }
 
-  //у children тоже есть relations но они не подгружаются
-
   async getPostComments(postId: number) {
-    const comments = await this.commentsRepository
-      .createQueryBuilder('comments')
-      .innerJoinAndSelect('comments.author', 'author')
-      .leftJoinAndSelect('comments.children', 'children')
-      .innerJoinAndSelect('comments.article', 'article')
-      .where('comments.article = :article', { article: postId })
-      .getMany();
+    const comments = await this.commentsRepository.find({
+      relations: ['article', 'author', 'children'],
+      where: {
+        article: {
+          id: postId,
+        },
+        parent: IsNull(),
+      },
+    });
 
     return comments;
+  }
+
+  async getCommentChildren(parentCommentId: number) {
+    const parentComment = await this.commentsRepository.findOne({
+      where: {
+        id: parentCommentId,
+      },
+      relations: ['author', 'article'],
+    });
+
+    const children = await this.commentsRepository.manager
+      .getTreeRepository(Comment)
+      .findDescendantsTree(parentComment, {
+        relations: ['author', 'article'],
+      });
+
+    return children;
   }
 
   async getUserComments(id) {

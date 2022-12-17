@@ -156,24 +156,11 @@ export class PostsService {
     return posts;
   }
 
-  // не работает
-
   async getSearchResults(searchQuery: string) {
-    //вариант через queryBuilder
-
-    const postRepository = this.postsRepository;
-
-    const posts = await postRepository
-      .createQueryBuilder('post')
-      .where('post.title LIKE :title', { title: `%weather%` })
-      .getMany();
-
-    //вариант через find
-
-    const posts2 = await postRepository.find({
-      where: { title: Like('%weather%') },
+    const searchResults = await this.postsRepository.find({
+      where: { title: Like(`%${searchQuery}%`) },
     });
 
-    return posts;
+    return searchResults;
   }
 }

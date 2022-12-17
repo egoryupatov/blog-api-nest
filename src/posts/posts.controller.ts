@@ -32,16 +32,21 @@ export class PostsController {
     return this.postsService.getBannedPosts(request.user?.id);
   }
 
-  @Get(':category/:id')
+  @Get('category/:category/:id')
   async getSinglePost(@Param('id') id: string): Promise<Article> {
     return this.postsService.getSinglePost(Number(id));
   }
 
-  @Get(':category')
+  @Get('category/:category')
   async getPostsByCategory(
     @Param('category') category: string,
   ): Promise<Article[]> {
     return this.postsService.getPostsByCategory(category);
+  }
+
+  @Get('search/:query')
+  async getPostSearchResults(@Param('query') query: string) {
+    return this.postsService.getSearchResults(query);
   }
 
   @Post()
@@ -88,10 +93,5 @@ export class PostsController {
   @Post('rating/decrement')
   async decrementRating(@Body() body) {
     return this.postsService.decrementRating(Number(body.id));
-  }
-
-  @Get('search/:query')
-  async getPostSearchResults(@Param('query') query: string) {
-    return this.postsService.getSearchResults(query);
   }
 }

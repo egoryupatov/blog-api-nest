@@ -35,6 +35,8 @@ export class UsersService {
         },
         articles: true,
         bannedArticles: true,
+        subscriptions: true,
+        subscribers: true,
       },
     });
 
@@ -75,5 +77,38 @@ export class UsersService {
     });
 
     await this.usersRepository.save(user);
+  }
+
+  async subscribeToUser(userId: number, subId: number) {
+    const user = await this.usersRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: {
+        subscriptions: true,
+      },
+    });
+
+    const subscription = await this.usersRepository.findOne({
+      where: {
+        id: subId,
+      },
+    });
+
+    user.subscriptions.push(subscription);
+    //не работает
+    //переписать на save?
+  }
+
+  async unsubscribeFromUser(userId: number, subId: number) {
+    const user = await this.usersRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    //размапить и вернуть null если совпадает с subId
+
+    return user;
   }
 }

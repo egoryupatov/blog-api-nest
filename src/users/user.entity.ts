@@ -42,9 +42,11 @@ export class User {
   @JoinTable({ name: 'bannedArticles' })
   bannedArticles: Article[];
 
-  @ManyToMany(() => User, (user) => user.subscription)
-  subscription: User[];
+  @ManyToMany(() => User, (user) => user.subscriptions)
+  @JoinTable()
+  subscriptions: User[];
 
   @ManyToMany(() => User, (user) => user.subscribers)
+  @JoinTable()
   subscribers: User[];
 }

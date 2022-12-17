@@ -16,7 +16,7 @@ import { User } from '../users/user.entity';
 import { Category } from '../category/category.entity';
 
 @Entity()
-@Tree('closure-table')
+@Tree('nested-set')
 export class Comment {
   @PrimaryGeneratedColumn()
   id: number;
@@ -41,11 +41,4 @@ export class Comment {
 
   @TreeParent()
   parent: Comment;
-
-  /*
-  @ManyToOne(() => Comment, (comment) => comment.children)
-  parent: Comment;
-
-  @OneToMany(() => Comment, (comment) => comment.parent, { eager: true })
-  children: Comment[];*/
 }
