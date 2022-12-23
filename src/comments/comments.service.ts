@@ -88,12 +88,9 @@ export class CommentsService {
     comment.article = post;
     comment.text = data.text;
     comment.author = data.author;
+    comment.parent = null;
 
     await this.commentsRepository.save(comment);
-
-    post.comments = [...post.comments, comment];
-
-    await this.postsRepository.save(post);
   }
 
   async addAnswer(data: Comment, parentCommentId: number) {

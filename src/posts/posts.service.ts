@@ -159,6 +159,7 @@ export class PostsService {
   async getSearchResults(searchQuery: string) {
     const searchResults = await this.postsRepository.find({
       where: { title: Like(`%${searchQuery}%`) },
+      relations: ['category', 'author', 'comments'],
     });
 
     return searchResults;
