@@ -33,9 +33,6 @@ export class Article {
   @CreateDateColumn()
   publishDate: Date;
 
-  @Column({ nullable: true })
-  categoryImage: string;
-
   @Column()
   postImage: string;
 

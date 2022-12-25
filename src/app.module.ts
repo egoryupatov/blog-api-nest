@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/user.entity';
 import { UsersModule } from './users/users.module';
-import { Article } from './posts/article.entity';
 import { PostsModule } from './posts/posts.module';
 import { Comment } from './comments/comments.entity';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -13,6 +12,7 @@ import { CommentsModule } from './comments/comments.module';
 import { Category } from './category/category.entity';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { Article } from './posts/article.entity';
 
 @Module({
   imports: [

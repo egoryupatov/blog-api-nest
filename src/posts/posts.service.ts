@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Article } from './article.entity';
-import { Not, In, Repository, DataSource, ILike } from 'typeorm';
+import { Not, In, Repository } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Category } from '../category/category.entity';
 import { Like } from 'typeorm';

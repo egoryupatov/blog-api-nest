@@ -33,7 +33,11 @@ export class UsersService {
           },
           author: true,
         },
-        articles: true,
+        articles: {
+          category: true,
+          author: true,
+          comments: true,
+        },
         bannedArticles: true,
         subscriptions: true,
         subscribers: true,
@@ -95,9 +99,9 @@ export class UsersService {
       },
     });
 
-    user.subscriptions.push(subscription);
-    //не работает
-    //переписать на save?
+    user.subscriptions = [...user.subscriptions, subscription];
+
+    await this.usersRepository.save(user);
   }
 
   async unsubscribeFromUser(userId: number, subId: number) {
@@ -105,10 +109,15 @@ export class UsersService {
       where: {
         id: userId,
       },
+      relations: {
+        subscriptions: true,
+      },
     });
 
-    //размапить и вернуть null если совпадает с subId
+    user.subscriptions = user.subscriptions.filter((sub) => {
+      return sub.id !== subId;
+    });
 
-    return user;
+    await this.usersRepository.save(user);
   }
 }
