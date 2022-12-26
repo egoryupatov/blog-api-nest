@@ -54,6 +54,7 @@ export class PostsService {
       relations: {
         bannedByUsers: true,
         author: true,
+        category: true,
       },
       where: {
         id: In(user.bannedArticles.map((article) => article.id)),

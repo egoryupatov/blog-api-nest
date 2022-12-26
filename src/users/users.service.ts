@@ -93,15 +93,20 @@ export class UsersService {
       },
     });
 
-    const subscription = await this.usersRepository.findOne({
+    const subscribedTo = await this.usersRepository.findOne({
       where: {
         id: subId,
       },
+      relations: {
+        subscribers: true,
+      },
     });
 
-    user.subscriptions = [...user.subscriptions, subscription];
+    user.subscriptions = [...user.subscriptions, subscribedTo];
+    subscribedTo.subscribers = [...subscribedTo.subscribers, user];
 
     await this.usersRepository.save(user);
+    await this.usersRepository.save(subscribedTo);
   }
 
   async unsubscribeFromUser(userId: number, subId: number) {
@@ -114,10 +119,24 @@ export class UsersService {
       },
     });
 
+    const subscribedTo = await this.usersRepository.findOne({
+      where: {
+        id: subId,
+      },
+      relations: {
+        subscribers: true,
+      },
+    });
+
     user.subscriptions = user.subscriptions.filter((sub) => {
-      return sub.id !== subId;
+      return sub.id !== subscribedTo.id;
+    });
+
+    subscribedTo.subscribers = subscribedTo.subscribers.filter((sub) => {
+      return sub.id !== user.id;
     });
 
     await this.usersRepository.save(user);
+    await this.usersRepository.save(subscribedTo);
   }
 }
