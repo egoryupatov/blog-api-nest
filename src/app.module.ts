@@ -12,7 +12,7 @@ import { CommentsModule } from './comments/comments.module';
 import { Category } from './category/category.entity';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { Article } from './posts/article.entity';
+import { BlogPost } from './posts/blogPost.entity';
 
 @Module({
   imports: [
@@ -27,7 +27,7 @@ import { Article } from './posts/article.entity';
       port: 3306,
       password: 'qwerty',
       database: 'blog',
-      entities: [User, Article, Comment, Category],
+      entities: [User, BlogPost, Comment, Category],
       synchronize: true,
       autoLoadEntities: true,
     }),

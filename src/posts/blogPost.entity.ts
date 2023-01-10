@@ -14,27 +14,27 @@ import { Comment } from '../comments/comments.entity';
 import { Category } from '../category/category.entity';
 
 @Entity()
-export class Article {
+export class BlogPost {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.articles)
-  author: User;
+  @ManyToOne(() => User, (user) => user.blogPosts)
+  user: User;
 
-  @ManyToOne(() => Category, (category) => category.articles)
+  @ManyToOne(() => Category, (category) => category.blogPosts)
   category: Category;
 
-  @ManyToMany(() => User, (user) => user.bannedArticles)
+  @ManyToMany(() => User, (user) => user.hiddenBlogPosts)
   bannedByUsers: User[];
 
-  @OneToMany(() => Comment, (comments) => comments.article)
+  @OneToMany(() => Comment, (comments) => comments.blogPost)
   comments: Comment[];
 
   @CreateDateColumn()
   publishDate: Date;
 
   @Column()
-  postImage: string;
+  image: string;
 
   @Column()
   title: string;
@@ -42,9 +42,9 @@ export class Article {
   @Column()
   description: string;
 
-  @Column({ default: 0 })
-  rating: number;
-
   @Column('text')
   text: string;
+
+  @Column({ default: 0 })
+  rating: number;
 }

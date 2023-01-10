@@ -7,7 +7,7 @@ import {
   JoinTable,
   CreateDateColumn,
 } from 'typeorm';
-import { Article } from '../posts/article.entity';
+import { BlogPost } from '../posts/blogPost.entity';
 import { Comment } from '../comments/comments.entity';
 
 @Entity()
@@ -30,23 +30,23 @@ export class User {
   @Column()
   rating: number;
 
-  @OneToMany(() => Article, (article) => article.author)
-  articles: Article[];
+  @OneToMany(() => BlogPost, (blogPost) => blogPost.user)
+  blogPosts: BlogPost[];
 
-  @OneToMany(() => Comment, (comment) => comment.author)
+  @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];
 
-  @ManyToMany(() => Article, (article) => article.bannedByUsers, {
+  @ManyToMany(() => BlogPost, (blogPost) => blogPost.bannedByUsers, {
     cascade: true,
   })
-  @JoinTable({ name: 'bannedArticles' })
-  bannedArticles: Article[];
+  @JoinTable({ name: 'hiddenBlogPosts' })
+  hiddenBlogPosts: BlogPost[];
 
   @ManyToMany(() => User, (user) => user.subscriptions)
-  @JoinTable()
+  @JoinTable({ name: 'subscriptions' })
   subscriptions: User[];
 
   @ManyToMany(() => User, (user) => user.subscribers)
-  @JoinTable()
+  @JoinTable({ name: 'subscribers' })
   subscribers: User[];
 }

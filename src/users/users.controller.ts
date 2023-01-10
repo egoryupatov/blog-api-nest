@@ -10,7 +10,7 @@ import {
   Param,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { Article } from '../posts/article.entity';
+import { BlogPost } from '../posts/blogPost.entity';
 
 @Controller({ path: '/users' })
 export class UsersController {

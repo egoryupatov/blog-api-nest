@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
-import { Article } from '../posts/article.entity';
+import { BlogPost } from '../posts/blogPost.entity';
 import { Comment } from '../comments/comments.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
-    @InjectRepository(Article) private postsRepository: Repository<Article>,
+    @InjectRepository(BlogPost) private postsRepository: Repository<BlogPost>,
     @InjectRepository(Comment) private commentsRepository: Repository<Comment>,
   ) {}
 
@@ -28,17 +28,17 @@ export class UsersService {
       },
       relations: {
         comments: {
-          article: {
+          blogPost: {
             category: true,
           },
-          author: true,
+          user: true,
         },
-        articles: {
+        blogPosts: {
           category: true,
-          author: true,
+          user: true,
           comments: true,
         },
-        bannedArticles: true,
+        hiddenBlogPosts: true,
         subscriptions: true,
         subscribers: true,
       },
@@ -52,18 +52,18 @@ export class UsersService {
     const user = await this.usersRepository.findOneOrFail({
       where: { id: data.userId },
       relations: {
-        bannedArticles: true,
+        hiddenBlogPosts: true,
       },
     });
 
-    const article = await this.postsRepository.findOneOrFail({
+    const blogPost = await this.postsRepository.findOneOrFail({
       where: { id: data.postId },
       relations: {
         bannedByUsers: true,
       },
     });
 
-    user.bannedArticles = [...user.bannedArticles, article];
+    user.hiddenBlogPosts = [...user.hiddenBlogPosts, blogPost];
 
     await this.usersRepository.save(user);
   }
@@ -72,11 +72,11 @@ export class UsersService {
     const user = await this.usersRepository.findOneOrFail({
       where: { id: data.userId },
       relations: {
-        bannedArticles: true,
+        hiddenBlogPosts: true,
       },
     });
 
-    user.bannedArticles = user.bannedArticles.filter((e) => {
+    user.hiddenBlogPosts = user.hiddenBlogPosts.filter((e) => {
       return e.id !== data.postId;
     });
 

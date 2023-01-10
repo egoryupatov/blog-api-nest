@@ -5,14 +5,12 @@ import {
   Get,
   Param,
   Post,
-  Put,
   Req,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { Article } from './article.entity';
+import { BlogPost } from './blogPost.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { diskStorage } from 'multer';
@@ -23,24 +21,24 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get('all')
-  async getAllPostsWithoutBanned(@Req() request): Promise<Article[]> {
+  async getAllPostsWithoutBanned(@Req() request): Promise<BlogPost[]> {
     return this.postsService.getAllPostsWithoutBanned(request.user?.id);
   }
 
   @Get('banned')
-  async getBannedPosts(@Req() request): Promise<Article[]> {
+  async getBannedPosts(@Req() request): Promise<BlogPost[]> {
     return this.postsService.getBannedPosts(request.user?.id);
   }
 
   @Get('category/:category/:id')
-  async getSinglePost(@Param('id') id: string): Promise<Article> {
+  async getSinglePost(@Param('id') id: string): Promise<BlogPost> {
     return this.postsService.getSinglePost(Number(id));
   }
 
   @Get('category/:category')
   async getPostsByCategory(
     @Param('category') category: string,
-  ): Promise<Article[]> {
+  ): Promise<BlogPost[]> {
     return this.postsService.getPostsByCategory(category);
   }
 
@@ -50,7 +48,7 @@ export class PostsController {
   }
 
   @Post()
-  addPost(@Body() data: Article) {
+  addPost(@Body() data: BlogPost) {
     return this.postsService.addPost(data);
   }
 

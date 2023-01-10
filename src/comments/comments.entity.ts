@@ -11,7 +11,7 @@ import {
   TreeChildren,
   TreeParent,
 } from 'typeorm';
-import { Article } from '../posts/article.entity';
+import { BlogPost } from '../posts/blogPost.entity';
 import { User } from '../users/user.entity';
 import { Category } from '../category/category.entity';
 
@@ -21,11 +21,11 @@ export class Comment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Article, (article) => article.comments)
-  article: Article;
+  @ManyToOne(() => BlogPost, (blogPost) => blogPost.comments)
+  blogPost: BlogPost;
 
   @ManyToOne(() => User, (user) => user.comments)
-  author: User;
+  user: User;
 
   @Column()
   text: string;

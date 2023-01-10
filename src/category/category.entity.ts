@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Article } from '../posts/article.entity';
+import { BlogPost } from '../posts/blogPost.entity';
 
 @Entity()
 export class Category {
@@ -12,6 +12,6 @@ export class Category {
   @Column()
   image: string;
 
-  @OneToMany(() => Article, (article) => article.category)
-  articles: Article[];
+  @OneToMany(() => BlogPost, (blogPost) => blogPost.category)
+  blogPosts: BlogPost[];
 }

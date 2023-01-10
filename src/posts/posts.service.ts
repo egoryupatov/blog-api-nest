@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Article } from './article.entity';
+import { BlogPost } from './blogPost.entity';
 import { Not, In, Repository } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Category } from '../category/category.entity';
@@ -9,16 +9,16 @@ import { Like } from 'typeorm';
 @Injectable()
 export class PostsService {
   constructor(
-    @InjectRepository(Article) private postsRepository: Repository<Article>,
+    @InjectRepository(BlogPost) private postsRepository: Repository<BlogPost>,
     @InjectRepository(User) private userRepository: Repository<User>,
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
   ) {}
 
-  async getAllPostsWithoutBanned(userId: number): Promise<Article[]> {
+  async getAllPostsWithoutBanned(userId: number): Promise<BlogPost[]> {
     const user = await this.userRepository.findOneOrFail({
       relations: {
-        bannedArticles: true,
+        hiddenBlogPosts: true,
       },
       where: {
         id: userId,
@@ -28,22 +28,22 @@ export class PostsService {
     const posts = await this.postsRepository.find({
       relations: {
         bannedByUsers: true,
-        author: true,
+        user: true,
         category: true,
         comments: true,
       },
       where: {
-        id: Not(In(user.bannedArticles.map((article) => article.id))),
+        id: Not(In(user.hiddenBlogPosts.map((article) => article.id))),
       },
     });
 
     return posts;
   }
 
-  async getBannedPosts(userId: number): Promise<Article[]> {
+  async getBannedPosts(userId: number): Promise<BlogPost[]> {
     const user = await this.userRepository.findOneOrFail({
       relations: {
-        bannedArticles: true,
+        hiddenBlogPosts: true,
       },
       where: {
         id: userId,
@@ -53,25 +53,25 @@ export class PostsService {
     const posts = await this.postsRepository.find({
       relations: {
         bannedByUsers: true,
-        author: true,
+        user: true,
         category: true,
       },
       where: {
-        id: In(user.bannedArticles.map((article) => article.id)),
+        id: In(user.hiddenBlogPosts.map((article) => article.id)),
       },
     });
 
     return posts;
   }
 
-  async getSinglePost(id: number): Promise<Article> {
+  async getSinglePost(id: number): Promise<BlogPost> {
     const post = await this.postsRepository.findOne({
       where: {
         id: id,
       },
       relations: {
         category: true,
-        author: true,
+        user: true,
         comments: true,
       },
     });
@@ -79,7 +79,7 @@ export class PostsService {
     return post;
   }
 
-  async addPost(post: Article) {
+  async addPost(post: BlogPost) {
     await this.postsRepository.save(post);
   }
 
@@ -103,7 +103,7 @@ export class PostsService {
   async incrementRating(id: number) {
     const post = await this.postsRepository.findOne({
       relations: {
-        author: true,
+        user: true,
       },
       where: {
         id: id,
@@ -111,7 +111,7 @@ export class PostsService {
     });
 
     const user = await this.userRepository.findOne({
-      where: { id: post.author.id },
+      where: { id: post.user.id },
     });
 
     await this.postsRepository.increment({ id: post.id }, 'rating', 1);
@@ -121,7 +121,7 @@ export class PostsService {
   async decrementRating(id: number) {
     const post = await this.postsRepository.findOne({
       relations: {
-        author: true,
+        user: true,
       },
       where: {
         id: id,
@@ -129,14 +129,14 @@ export class PostsService {
     });
 
     const user = await this.userRepository.findOne({
-      where: { id: post.author.id },
+      where: { id: post.user.id },
     });
 
     await this.postsRepository.decrement({ id: post.id }, 'rating', 1);
     await this.userRepository.decrement({ id: user.id }, 'rating', 1);
   }
 
-  async getPostsByCategory(postCategory: string): Promise<Article[]> {
+  async getPostsByCategory(postCategory: string): Promise<BlogPost[]> {
     const category = await this.categoryRepository.findOne({
       where: {
         name: postCategory,
@@ -147,7 +147,7 @@ export class PostsService {
       relations: {
         category: true,
         comments: true,
-        author: true,
+        user: true,
       },
       where: {
         category: category,

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository } from 'typeorm';
 import { Comment } from './comments.entity';
-import { Article } from '../posts/article.entity';
+import { BlogPost } from '../posts/blogPost.entity';
 import { User } from '../users/user.entity';
 
 @Injectable()
@@ -10,8 +10,8 @@ export class CommentsService {
   constructor(
     @InjectRepository(Comment)
     private commentsRepository: Repository<Comment>,
-    @InjectRepository(Article)
-    private postsRepository: Repository<Article>,
+    @InjectRepository(BlogPost)
+    private postsRepository: Repository<BlogPost>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) {}
@@ -19,19 +19,19 @@ export class CommentsService {
   async getAllComments() {
     return this.commentsRepository.find({
       relations: {
-        article: {
+        blogPost: {
           category: true,
         },
-        author: true,
+        user: true,
       },
     });
   }
 
   async getPostComments(postId: number) {
     const comments = await this.commentsRepository.find({
-      relations: ['article', 'author', 'children'],
+      relations: ['blogPost', 'user', 'children'],
       where: {
-        article: {
+        blogPost: {
           id: postId,
         },
         parent: IsNull(),
@@ -46,13 +46,13 @@ export class CommentsService {
       where: {
         id: parentCommentId,
       },
-      relations: ['author', 'article'],
+      relations: ['user', 'blogPost'],
     });
 
     const children = await this.commentsRepository.manager
       .getTreeRepository(Comment)
       .findDescendantsTree(parentComment, {
-        relations: ['author', 'article'],
+        relations: ['user', 'blogPost'],
       });
 
     return children;
@@ -61,12 +61,12 @@ export class CommentsService {
   async getUserComments(id) {
     const comments = await this.commentsRepository.find({
       relations: {
-        article: {
+        blogPost: {
           category: true,
         },
       },
       where: {
-        author: id,
+        user: id,
       },
     });
     return comments;
@@ -79,15 +79,15 @@ export class CommentsService {
       },
       relations: {
         comments: true,
-        author: true,
+        user: true,
       },
     });
 
     const comment = new Comment();
 
-    comment.article = post;
+    comment.blogPost = post;
     comment.text = data.text;
-    comment.author = data.author;
+    comment.user = data.user;
     comment.parent = null;
 
     await this.commentsRepository.save(comment);
@@ -102,9 +102,9 @@ export class CommentsService {
 
     const answer = new Comment();
 
-    answer.article = data.article;
+    answer.blogPost = data.blogPost;
     answer.text = data.text;
-    answer.author = data.author;
+    answer.user = data.user;
     answer.parent = parentComment;
 
     await this.commentsRepository.save(answer);
@@ -113,7 +113,7 @@ export class CommentsService {
   async incrementRating(id: number) {
     const comment = await this.commentsRepository.findOne({
       relations: {
-        author: true,
+        user: true,
       },
       where: {
         id: id,
@@ -121,7 +121,7 @@ export class CommentsService {
     });
 
     const user = await this.usersRepository.findOne({
-      where: { id: comment.author.id },
+      where: { id: comment.user.id },
     });
 
     await this.commentsRepository.increment({ id: comment.id }, 'rating', 1);
@@ -131,7 +131,7 @@ export class CommentsService {
   async decrementRating(id: number) {
     const comment = await this.commentsRepository.findOne({
       relations: {
-        author: true,
+        user: true,
       },
       where: {
         id: id,
@@ -139,7 +139,7 @@ export class CommentsService {
     });
 
     const user = await this.usersRepository.findOne({
-      where: { id: comment.author.id },
+      where: { id: comment.user.id },
     });
 
     await this.commentsRepository.decrement({ id: comment.id }, 'rating', 1);
