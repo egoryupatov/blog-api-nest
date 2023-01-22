@@ -3,6 +3,6 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
-  await app.listen('https://blogger-server.onrender.com');
+  await app.listen('https://blogger-server.onrender.com', 3005);
 }
 bootstrap();
