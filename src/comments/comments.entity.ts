@@ -2,21 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  Tree,
-  TreeChildren,
-  TreeParent,
 } from 'typeorm';
-import { BlogPost } from '../posts/blogPost.entity';
+import { BlogPost } from '../posts/entity/blogPost.entity';
 import { User } from '../users/user.entity';
-import { Category } from '../category/category.entity';
 
 @Entity()
-@Tree('nested-set')
 export class Comment {
   @PrimaryGeneratedColumn()
   id: number;
@@ -30,15 +23,12 @@ export class Comment {
   @Column()
   text: string;
 
-  @Column({ default: 0 })
-  rating: number;
-
   @CreateDateColumn()
   publishDate: Date;
 
-  @TreeChildren()
-  children: Comment[];
-
-  @TreeParent()
+  @ManyToOne((type) => Comment, (comment) => comment.children)
   parent: Comment;
+
+  @OneToMany((type) => Comment, (comment) => comment.parent)
+  children: Comment[];
 }

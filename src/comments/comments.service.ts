@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Repository } from 'typeorm';
+import { IsNull, Like, Repository } from 'typeorm';
 import { Comment } from './comments.entity';
-import { BlogPost } from '../posts/blogPost.entity';
+import { BlogPost } from '../posts/entity/blogPost.entity';
 import { User } from '../users/user.entity';
 
 @Injectable()
@@ -15,6 +15,29 @@ export class CommentsService {
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) {}
+
+  async getLiveComments() {
+    const liveComments = await this.commentsRepository.find({
+      relations: ['user', 'blogPost'],
+      take: 6,
+    });
+
+    return liveComments.map((comment: any) => ({
+      id: comment.id,
+      text: comment.text,
+      user: {
+        id: comment.user.id,
+        login: comment.user.login,
+        avatar: comment.user.avatar,
+      },
+      post: {
+        id: comment.blogPost.id,
+        title: comment.blogPost.title,
+      },
+    }));
+  }
+
+  /* Old */
 
   async getAllComments() {
     return this.commentsRepository.find({
@@ -41,21 +64,22 @@ export class CommentsService {
     return comments;
   }
 
-  async getCommentChildren(parentCommentId: number) {
-    const parentComment = await this.commentsRepository.findOne({
-      where: {
-        id: parentCommentId,
+  async getChildComments(parentCommentId: number) {
+    const childComments = await this.commentsRepository.find({
+      relations: {
+        parent: true,
+        children: true,
+        blogPost: true,
+        user: true,
       },
-      relations: ['user', 'blogPost'],
+      where: {
+        parent: {
+          id: parentCommentId,
+        },
+      },
     });
 
-    const children = await this.commentsRepository.manager
-      .getTreeRepository(Comment)
-      .findDescendantsTree(parentComment, {
-        relations: ['user', 'blogPost'],
-      });
-
-    return children;
+    return childComments;
   }
 
   async getUserComments(id) {
@@ -72,23 +96,23 @@ export class CommentsService {
     return comments;
   }
 
-  async addComment(data: Comment, id: number) {
-    const post = await this.postsRepository.findOneOrFail({
-      where: {
-        id: id,
-      },
-      relations: {
-        comments: true,
-        user: true,
-      },
+  async addComment(data: Comment) {
+    console.log('data', data);
+    const post = await this.postsRepository.findOneBy({
+      id: Number(data.blogPost.id),
+    });
+
+    const user = await this.usersRepository.findOneBy({
+      id: Number(data.user.id),
     });
 
     const comment = new Comment();
 
     comment.blogPost = post;
+    comment.user = user;
     comment.text = data.text;
-    comment.user = data.user;
     comment.parent = null;
+    comment.publishDate = data.publishDate;
 
     await this.commentsRepository.save(comment);
   }

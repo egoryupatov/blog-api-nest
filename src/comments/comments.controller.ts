@@ -1,10 +1,17 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { Comment } from './comments.entity';
 
 @Controller({ path: '/comments' })
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
+
+  @Get('live')
+  async getLiveComments() {
+    return this.commentsService.getLiveComments();
+  }
+
+  /* Old */
 
   @Get()
   async getAllComments(): Promise<Comment[]> {
@@ -16,9 +23,9 @@ export class CommentsController {
     return this.commentsService.getPostComments(Number(id));
   }
 
-  @Get('children/:id')
-  async getCommentChildren(@Param('id') id: string) {
-    return this.commentsService.getCommentChildren(Number(id));
+  @Get('child/:id')
+  async getChildComments(@Param('id') id: string) {
+    return this.commentsService.getChildComments(Number(id));
   }
 
   @Get('user/:id')
@@ -26,9 +33,9 @@ export class CommentsController {
     return this.commentsService.getUserComments(Number(id));
   }
 
-  @Post(':id')
-  async addComment(@Body() data: Comment, @Param('id') id: string) {
-    await this.commentsService.addComment(data, Number(id));
+  @Post('add')
+  async addComment(@Body() data: Comment) {
+    await this.commentsService.addComment(data);
   }
 
   @Post(':id/answer')

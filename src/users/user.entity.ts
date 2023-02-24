@@ -7,8 +7,10 @@ import {
   JoinTable,
   CreateDateColumn,
 } from 'typeorm';
-import { BlogPost } from '../posts/blogPost.entity';
+import { BlogPost } from '../posts/entity/blogPost.entity';
 import { Comment } from '../comments/comments.entity';
+import { Like } from '../like/like.entity';
+import { Category } from '../category/category.entity';
 
 @Entity()
 export class User {
@@ -24,11 +26,17 @@ export class User {
   @Column()
   avatar: string;
 
+  @Column({ nullable: true })
+  banner: string;
+
   @CreateDateColumn()
   signUpDate: Date;
 
   @Column()
   rating: number;
+
+  @Column()
+  description: string;
 
   @OneToMany(() => BlogPost, (blogPost) => blogPost.user)
   blogPosts: BlogPost[];
@@ -36,11 +44,14 @@ export class User {
   @OneToMany(() => Comment, (comment) => comment.user)
   comments: Comment[];
 
-  @ManyToMany(() => BlogPost, (blogPost) => blogPost.bannedByUsers, {
+  @OneToMany(() => Like, (like) => like.user)
+  likes: Like[];
+
+  /*  @ManyToMany(() => BlogPost, (blogPost) => blogPost.bannedByUsers, {
     cascade: true,
   })
   @JoinTable({ name: 'hiddenBlogPosts' })
-  hiddenBlogPosts: BlogPost[];
+  hiddenBlogPosts: BlogPost[];*/
 
   @ManyToMany(() => User, (user) => user.subscriptions)
   @JoinTable({ name: 'subscriptions' })
@@ -49,4 +60,7 @@ export class User {
   @ManyToMany(() => User, (user) => user.subscribers)
   @JoinTable({ name: 'subscribers' })
   subscribers: User[];
+
+  @ManyToMany(() => Category, (category) => category.subscribers)
+  categorySubscriptions: Category[];
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BlogPost } from './blogPost.entity';
-import { Not, In, Repository } from 'typeorm';
+import { BlogPost } from './entity/blogPost.entity';
+import { Repository } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Category } from '../category/category.entity';
 import { Like } from 'typeorm';
@@ -15,7 +15,144 @@ export class PostsService {
     private categoryRepository: Repository<Category>,
   ) {}
 
-  async getAllPostsWithoutBanned(userId: number): Promise<BlogPost[]> {
+  async getNews(offset: number) {
+    const news = await this.postsRepository.find({
+      take: 4,
+      relations: {
+        comments: true,
+      },
+      skip: offset,
+    });
+
+    return news.map((post: any) => ({
+      id: post.id,
+      title: post.title,
+      comments: post.comments.length,
+    }));
+  }
+
+  async getPostsFeed() {
+    const postsFeed = await this.postsRepository.find({
+      take: 10,
+      relations: ['comments', 'category', 'user'],
+    });
+
+    return postsFeed.map((post: any) => ({
+      id: post.id,
+      publishDate: post.publishDate,
+      title: post.title,
+      description: post.description,
+      image: post.image,
+      likes: post.likes,
+      user: {
+        id: post.user.id,
+        login: post.user.login,
+      },
+      comments: post.comments.length,
+      category: {
+        id: post.category.id,
+        name: post.category.name,
+        avatar: post.category.avatar,
+      },
+    }));
+  }
+
+  async getPost(id: string) {
+    const post = await this.postsRepository.findOne({
+      where: {
+        id: Number(id),
+      },
+      relations: ['comments', 'category', 'user'],
+    });
+
+    const res = {
+      id: post.id,
+      publishDate: post.publishDate,
+      title: post.title,
+      description: post.description,
+      image: post.image,
+      likes: post.likes,
+      user: {
+        id: post.user.id,
+        login: post.user.login,
+      },
+      text: post.text,
+      comments: post.comments.length,
+      category: {
+        id: post.category.id,
+        name: post.category.name,
+        avatar: post.category.avatar,
+      },
+    };
+
+    return res;
+  }
+
+  async getUserPosts(userID: number) {
+    const userPosts = await this.postsRepository.find({
+      where: {
+        user: {
+          id: userID,
+        },
+      },
+      take: 10,
+      relations: ['comments', 'category', 'user'],
+    });
+
+    return userPosts.map((post: any) => ({
+      id: post.id,
+      publishDate: post.publishDate,
+      title: post.title,
+      description: post.description,
+      image: post.image,
+      likes: post.likes,
+      user: {
+        id: post.user.id,
+        login: post.user.login,
+      },
+      comments: post.comments.length,
+      category: {
+        id: post.category.id,
+        name: post.category.name,
+        avatar: post.category.avatar,
+      },
+    }));
+  }
+
+  async getCategoryPosts(categoryID: number) {
+    const categoryPosts = await this.postsRepository.find({
+      where: {
+        category: {
+          id: categoryID,
+        },
+      },
+      take: 10,
+      relations: ['comments', 'category', 'user'],
+    });
+
+    return categoryPosts.map((post: any) => ({
+      id: post.id,
+      publishDate: post.publishDate,
+      title: post.title,
+      description: post.description,
+      image: post.image,
+      likes: post.likes,
+      user: {
+        id: post.user.id,
+        login: post.user.login,
+      },
+      comments: post.comments.length,
+      category: {
+        id: post.category.id,
+        name: post.category.name,
+        avatar: post.category.avatar,
+      },
+    }));
+  }
+
+  /* Old */
+
+  /*  async getAllPostsWithoutBanned(userId: number): Promise<BlogPost[]> {
     const user = await this.userRepository.findOneOrFail({
       relations: {
         hiddenBlogPosts: true,
@@ -40,8 +177,8 @@ export class PostsService {
     return posts;
   }
 
-  async getBannedPosts(userId: number): Promise<BlogPost[]> {
-    const user = await this.userRepository.findOneOrFail({
+  async getHiddenPosts(userId: number): Promise<BlogPost[]> {
+    const user = await this.userRepository.findOne({
       relations: {
         hiddenBlogPosts: true,
       },
@@ -62,7 +199,7 @@ export class PostsService {
     });
 
     return posts;
-  }
+  }*/
 
   async getSinglePost(id: number): Promise<BlogPost> {
     const post = await this.postsRepository.findOne({
