@@ -6,6 +6,16 @@ import { Comment } from './comments.entity';
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
+  @Get('posts/:id')
+  async getPostComments(@Param('id') id: string) {
+    return this.commentsService.getPostComments(Number(id));
+  }
+
+  @Get('answers/:id')
+  async getAnswers(@Param('id') id: string) {
+    return this.commentsService.getAnswers(Number(id));
+  }
+
   @Get('live')
   async getLiveComments() {
     return this.commentsService.getLiveComments();
@@ -13,19 +23,14 @@ export class CommentsController {
 
   /* Old */
 
+  @Get('single/:id')
+  async getSingleComment(@Param('id') id: string) {
+    return this.commentsService.getSingleComment(Number(id));
+  }
+
   @Get()
   async getAllComments(): Promise<Comment[]> {
     return this.commentsService.getAllComments();
-  }
-
-  @Get('post/:id')
-  async getPostComments(@Param('id') id: string) {
-    return this.commentsService.getPostComments(Number(id));
-  }
-
-  @Get('child/:id')
-  async getChildComments(@Param('id') id: string) {
-    return this.commentsService.getChildComments(Number(id));
   }
 
   @Get('user/:id')

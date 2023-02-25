@@ -23,6 +23,9 @@ export class Comment {
   @Column()
   text: string;
 
+  @Column()
+  likes: number;
+
   @CreateDateColumn()
   publishDate: Date;
 

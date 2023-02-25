@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Like, Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { Comment } from './comments.entity';
 import { BlogPost } from '../posts/entity/blogPost.entity';
 import { User } from '../users/user.entity';
@@ -16,13 +16,69 @@ export class CommentsService {
     private usersRepository: Repository<User>,
   ) {}
 
+  async getPostComments(postId: number) {
+    const comments = await this.commentsRepository.find({
+      relations: {
+        user: true,
+        children: true,
+      },
+      where: {
+        blogPost: {
+          id: postId,
+        },
+        parent: IsNull(),
+      },
+    });
+
+    return comments.map((comment: Comment) => ({
+      id: comment.id,
+      likes: comment.likes,
+      text: comment.text,
+      publishDate: comment.publishDate,
+      user: {
+        id: comment.user.id,
+        login: comment.user.login,
+        avatar: comment.user.avatar,
+      },
+      numberOfAnswers: comment.children ? comment.children.length : 0,
+    }));
+  }
+
+  async getAnswers(parentCommentId: number) {
+    const answers = await this.commentsRepository.find({
+      relations: {
+        parent: true,
+        children: true,
+        user: true,
+      },
+      where: {
+        parent: {
+          id: parentCommentId,
+        },
+      },
+    });
+
+    return answers.map((comment: Comment) => ({
+      id: comment.id,
+      likes: comment.likes,
+      text: comment.text,
+      publishDate: comment.publishDate,
+      user: {
+        id: comment.user.id,
+        login: comment.user.login,
+        avatar: comment.user.avatar,
+      },
+      numberOfAnswers: comment.children ? comment.children.length : 0,
+    }));
+  }
+
   async getLiveComments() {
     const liveComments = await this.commentsRepository.find({
       relations: ['user', 'blogPost'],
       take: 6,
     });
 
-    return liveComments.map((comment: any) => ({
+    return liveComments.map((comment: Comment) => ({
       id: comment.id,
       text: comment.text,
       user: {
@@ -39,6 +95,19 @@ export class CommentsService {
 
   /* Old */
 
+  async getSingleComment(commentId: number) {
+    const singleComment = await this.commentsRepository.findOne({
+      where: {
+        id: commentId,
+      },
+      relations: {
+        parent: true,
+        children: true,
+      },
+    });
+    return singleComment;
+  }
+
   async getAllComments() {
     return this.commentsRepository.find({
       relations: {
@@ -48,38 +117,6 @@ export class CommentsService {
         user: true,
       },
     });
-  }
-
-  async getPostComments(postId: number) {
-    const comments = await this.commentsRepository.find({
-      relations: ['blogPost', 'user', 'children'],
-      where: {
-        blogPost: {
-          id: postId,
-        },
-        parent: IsNull(),
-      },
-    });
-
-    return comments;
-  }
-
-  async getChildComments(parentCommentId: number) {
-    const childComments = await this.commentsRepository.find({
-      relations: {
-        parent: true,
-        children: true,
-        blogPost: true,
-        user: true,
-      },
-      where: {
-        parent: {
-          id: parentCommentId,
-        },
-      },
-    });
-
-    return childComments;
   }
 
   async getUserComments(id) {
