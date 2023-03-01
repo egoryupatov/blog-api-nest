@@ -6,10 +6,11 @@ import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
 import { Category } from '../category/category.entity';
 import { Comment } from '../comments/comments.entity';
+import { EventsGateway } from '../events/events.gateway';
 
 @Module({
   imports: [TypeOrmModule.forFeature([BlogPost, User, Category, Comment])],
-  providers: [PostsService],
+  providers: [PostsService, EventsGateway],
   controllers: [PostsController],
 })
 export class PostsModule {}

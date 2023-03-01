@@ -16,6 +16,7 @@ import { BlogPost } from './posts/entity/blogPost.entity';
 import { LikeModule } from './like/like.module';
 import { Like } from './like/like.entity';
 import { CategoryModule } from './category/category.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { CategoryModule } from './category/category.module';
     AuthModule,
     LikeModule,
     CategoryModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

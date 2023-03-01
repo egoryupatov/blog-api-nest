@@ -1,10 +1,14 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { Comment } from './comments.entity';
+import { EventsGateway } from '../events/events.gateway';
 
 @Controller({ path: '/comments' })
 export class CommentsController {
-  constructor(private readonly commentsService: CommentsService) {}
+  constructor(
+    private readonly commentsService: CommentsService,
+    private readonly socketService: EventsGateway,
+  ) {}
 
   @Get('posts/:id')
   async getPostComments(@Param('id') id: string) {
@@ -19,6 +23,25 @@ export class CommentsController {
   @Get('live')
   async getLiveComments() {
     return this.commentsService.getLiveComments();
+  }
+
+  @Post('add')
+  async addComment(@Body() data: Comment) {
+    const newComment = await this.commentsService.addComment(data);
+    this.socketService.server.emit('newComment', {
+      id: newComment.id,
+      text: newComment.text,
+      user: {
+        id: newComment.user.id,
+        login: newComment.user.login,
+        avatar: newComment.user.avatar,
+      },
+      post: {
+        id: newComment.blogPost.id,
+        title: newComment.blogPost.title,
+      },
+      likes: newComment.likes,
+    });
   }
 
   /* Old */
@@ -36,11 +59,6 @@ export class CommentsController {
   @Get('user/:id')
   async getUserComments(@Param('id') id: string): Promise<Comment[]> {
     return this.commentsService.getUserComments(Number(id));
-  }
-
-  @Post('add')
-  async addComment(@Body() data: Comment) {
-    await this.commentsService.addComment(data);
   }
 
   @Post(':id/answer')

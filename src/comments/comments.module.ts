@@ -7,10 +7,11 @@ import { BlogPost } from '../posts/entity/blogPost.entity';
 import { User } from '../users/user.entity';
 import { Category } from '../category/category.entity';
 import { PostsService } from '../posts/posts.service';
+import { EventsGateway } from '../events/events.gateway';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Comment, BlogPost, User, Category])],
-  providers: [CommentsService, PostsService],
+  providers: [CommentsService, PostsService, EventsGateway],
   controllers: [CommentsController],
 })
 export class CommentsModule {}

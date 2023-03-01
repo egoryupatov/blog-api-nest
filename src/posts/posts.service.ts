@@ -65,6 +65,10 @@ export class PostsService {
       relations: ['comments', 'category', 'user'],
     });
 
+    post.views += 1;
+
+    await this.postsRepository.save(post);
+
     const res = {
       id: post.id,
       publishDate: post.publishDate,
@@ -72,6 +76,7 @@ export class PostsService {
       description: post.description,
       image: post.image,
       likes: post.likes,
+      views: post.views,
       user: {
         id: post.user.id,
         login: post.user.login,
@@ -81,7 +86,7 @@ export class PostsService {
       category: {
         id: post.category.id,
         name: post.category.name,
-        avatar: post.category.avatar,
+        image: post.category.avatar,
       },
     };
 

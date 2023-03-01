@@ -24,11 +24,14 @@ export class BlogPost {
   @Column('text')
   text: string;
 
-  @Column()
+  @Column({ nullable: true })
   image: string;
 
-  @Column()
+  @Column({ default: 0 })
   likes: number;
+
+  @Column({ default: 0 })
+  views: number;
 
   @CreateDateColumn()
   publishDate: Date;

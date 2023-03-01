@@ -16,10 +16,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { EventsGateway } from '../events/events.gateway';
 
 @Controller({ path: '/posts' })
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(
+    private readonly postsService: PostsService,
+    private readonly socketService: EventsGateway,
+  ) {}
 
   @Get('news')
   async getNews(@Query('offset') offset: number) {
@@ -43,6 +47,7 @@ export class PostsController {
 
   @Get(':id')
   async getPost(@Param('id') id: string) {
+    this.socketService.server.emit('incrementVew');
     return this.postsService.getPost(id);
   }
 

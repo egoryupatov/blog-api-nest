@@ -75,6 +75,9 @@ export class CommentsService {
   async getLiveComments() {
     const liveComments = await this.commentsRepository.find({
       relations: ['user', 'blogPost'],
+      order: {
+        id: 'DESC',
+      },
       take: 6,
     });
 
@@ -91,6 +94,25 @@ export class CommentsService {
         title: comment.blogPost.title,
       },
     }));
+  }
+
+  async addComment(data: Comment) {
+    const post = await this.postsRepository.findOneBy({
+      id: Number(data.blogPost),
+    });
+
+    const user = await this.usersRepository.findOneBy({
+      id: Number(data.user),
+    });
+
+    const comment = new Comment();
+
+    comment.blogPost = post;
+    comment.user = user;
+    comment.text = data.text;
+    comment.likes = data.likes;
+
+    return this.commentsRepository.save(comment);
   }
 
   /* Old */
@@ -131,27 +153,6 @@ export class CommentsService {
       },
     });
     return comments;
-  }
-
-  async addComment(data: Comment) {
-    console.log('data', data);
-    const post = await this.postsRepository.findOneBy({
-      id: Number(data.blogPost.id),
-    });
-
-    const user = await this.usersRepository.findOneBy({
-      id: Number(data.user.id),
-    });
-
-    const comment = new Comment();
-
-    comment.blogPost = post;
-    comment.user = user;
-    comment.text = data.text;
-    comment.parent = null;
-    comment.publishDate = data.publishDate;
-
-    await this.commentsRepository.save(comment);
   }
 
   async addAnswer(data: Comment, parentCommentId: number) {
