@@ -47,7 +47,7 @@ export class PostsController {
 
   @Get(':id')
   async getPost(@Param('id') id: string) {
-    this.socketService.server.emit('incrementVew');
+    this.socketService.server.emit('incrementView');
     return this.postsService.getPost(id);
   }
 
